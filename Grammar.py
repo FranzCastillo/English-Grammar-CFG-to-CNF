@@ -8,5 +8,5 @@ class Grammar(object):
     def __str__(self):
         temp = "Terminals: {}\nVariables: {}\nStart: {}\nProductions:\n".format(self.terminals, self.variables, self.start)
         for variable in self.productions:
-            temp += "\t{} -> {}\n".format(variable, self.productions[variable])
+            temp += "\t{}\t->\t{}\n".format(variable, self.productions[variable])
         return temp
