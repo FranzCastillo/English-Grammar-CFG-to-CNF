@@ -8,6 +8,7 @@ class CNF:
         self.variables = cfg.variables
         self.start = cfg.start
         self.productions = cfg.productions
+        del self.cfg
 
     def _addProduction(self, variable, production):
         """
@@ -31,9 +32,6 @@ class CNF:
         self._addProduction(newStart, self.start)
         self.start = newStart
 
-    def _binaryProductions(self):
-        pass
-
     def _eliminateEpsilonProductions(self):
         pass
 
@@ -43,21 +41,29 @@ class CNF:
     def _eliminateUselessProductions(self):
         pass
 
-    def _eliminateUselessSymbols(self):
+    def _separateTerminalsFromVariables(self):
+        pass
+
+    def _eliminateProductionsWithMoreThan2Variables(self):
         pass
 
     def parseCFG(self):
+        """
+        Parses the CFG into CNF
+        It uses the following steps: https://www.geeksforgeeks.org/converting-context-free-grammar-chomsky-normal-form/
+        :return: Grammar in CNF
+        """
         # Step 1: Eliminate the start symbol from the RHS of the productions
         self._eliminateStartSymbolFromRHS()
-        # Step 2: Binary productions
-        self._binaryProductions()
-        # Step 3: Eliminate epsilon productions
+        # Step 2: Eliminate epsilon productions
         self._eliminateEpsilonProductions()
-        # Step 4: Eliminate unit productions
+        # Step 3: Eliminate unit productions
         self._eliminateUnitProductions()
-        # Step 5: Eliminate useless productions
+        # Step 4: Eliminate useless productions
         self._eliminateUselessProductions()
-        # Step 6: Eliminate useless symbols
-        self._eliminateUselessSymbols()
+        # Step 5: Separate terminals from variables in the RHS of the productions
+        self._separateTerminalsFromVariables()
+        # Step 6: Eliminate productions with more than 2 variables in the RHS
+        self._eliminateProductionsWithMoreThan2Variables()
 
         return Grammar(self.terminals, self.variables, self.start, self.productions)
