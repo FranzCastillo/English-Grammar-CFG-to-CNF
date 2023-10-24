@@ -54,9 +54,30 @@ class CNF:
                 self.productions[variableWithEpsilon].remove('')
             variablesWithEpsilon = self._getVariablesWithEpsilonProductions()
 
+    def _getUnitProductions(self):
+        """
+        Gets the unit productions
+        :return: List of unit productions (tuple of variable and production)
+        """
+        return [(variable, production) for variable in self.productions for production in self.productions[variable]
+                if len(production) == 1 and production in self.variables]
 
     def _eliminateUnitProductions(self):
-        pass
+        """
+        Eliminates unit productions
+        :return: None
+        """
+        unitProductions = self._getUnitProductions()
+        print(unitProductions)
+        while len(unitProductions) > 0:
+            for unitProduction in unitProductions:
+                if unitProduction[0] == unitProduction[1]:
+                    self.productions[unitProduction[0]].remove(unitProduction[1])
+                else:
+                    for production in self.productions[unitProduction[1]]:
+                        self.productions[unitProduction[0]].append(production)
+                    self.productions[unitProduction[0]].remove(unitProduction[1])
+            unitProductions = self._getUnitProductions()
 
     def _eliminateUselessProductions(self):
         pass
