@@ -32,32 +32,29 @@ class CNF:
         self._addProduction(newStart, self.start)
         self.start = newStart
 
-    def _hasEpsilonProductions(self):
+    def _getVariablesWithEpsilonProductions(self):
         """
-        Checks if the grammar has epsilon productions
-        :return: True if it has epsilon productions, False otherwise
+        Gets the variables with epsilon productions
+        :return:
         """
-        for variable in self.productions:
-            for production in self.productions[variable]:
-                if production == '':
-                    return True
-        return False
+        return [variable for variable, productions in self.productions.items() if '' in productions]
 
     def _eliminateEpsilonProductions(self):
         """
         Eliminates epsilon productions
         :return: None
         """
-        while self._hasEpsilonProductions():
-            variablesWithEpsilon = [variable for variable, productions in self.productions.items() if '' in productions]
-
+        variablesWithEpsilon = self._getVariablesWithEpsilonProductions()
+        while len(variablesWithEpsilon) > 0:
             for variableWithEpsilon in variablesWithEpsilon:
                 for variable in self.productions:
                     for production in self.productions[variable]:
                         if variableWithEpsilon in production:
                             self.productions[variable].append(production.replace(variableWithEpsilon, ''))
                 self.productions[variableWithEpsilon].remove('')
-                
+            variablesWithEpsilon = self._getVariablesWithEpsilonProductions()
+
+
     def _eliminateUnitProductions(self):
         pass
 
