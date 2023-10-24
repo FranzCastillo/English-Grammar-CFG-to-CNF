@@ -12,6 +12,7 @@ def main():
         'A': ['aAS', 'a', ''],
         'B': ['SbS', 'A', 'bb'],
     }
+
     cfg = Grammar(terminals, variables, start, productions)
     print(cfg)
     cnf = CNF.CNF(cfg).parseCFG()

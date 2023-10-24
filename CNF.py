@@ -1,3 +1,4 @@
+from VariableController import VariableController
 from Grammar import Grammar
 
 
@@ -9,6 +10,7 @@ class CNF:
         self.start = cfg.start
         self.productions = cfg.productions
         del self.cfg
+        self.vc = VariableController(self.variables)
 
     def _addProduction(self, variable, production):
         """
@@ -107,7 +109,32 @@ class CNF:
                         break
 
     def _separateTerminalsFromVariables(self):
-        pass
+        """
+        Separates terminals from variables in the RHS of the productions
+        :return: None
+        """
+        separatedTerminals = {}  # Terminal: VariableToReplace
+        for terminal in self.terminals:
+            newVariable = self.vc.getVariable()
+            separatedTerminals[terminal] = newVariable
+
+        for variable in self.variables:
+            tempProductions = []
+            for production in self.productions[variable]:
+                newProduction = ''
+                if len(production) > 1:
+                    for character in production:
+                        if character in self.terminals:
+                            newProduction += separatedTerminals[character]
+                        else:
+                            newProduction += character
+                else:
+                    newProduction = production
+                tempProductions.append(newProduction)
+                self.productions[variable] = tempProductions
+
+        for terminal in separatedTerminals:
+            self._addProduction(separatedTerminals[terminal], terminal)
 
     def _eliminateProductionsWithMoreThan2Variables(self):
         pass
