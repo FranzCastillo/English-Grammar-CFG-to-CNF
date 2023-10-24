@@ -68,7 +68,6 @@ class CNF:
         :return: None
         """
         unitProductions = self._getUnitProductions()
-        print(unitProductions)
         while len(unitProductions) > 0:
             for unitProduction in unitProductions:
                 if unitProduction[0] == unitProduction[1]:
@@ -80,7 +79,32 @@ class CNF:
             unitProductions = self._getUnitProductions()
 
     def _eliminateUselessProductions(self):
-        pass
+        """
+        Eliminates useless productions
+        As reference: https://www.geeksforgeeks.org/simplifying-context-free-grammars/
+        :return: None
+        """
+        # Step 1: Eliminate productions with variables that are not reachable from the start symbol
+        reachableVariables = {self.start}
+        for variable in self.variables:
+            for production in self.productions[variable]:
+                for character in production:
+                    if character in self.variables:
+                        reachableVariables.add(character)
+
+        removedVariables = []
+        for variable in self.variables:
+            if variable not in reachableVariables:
+                del self.productions[variable]
+                self.variables.remove(variable)
+                removedVariables.append(variable)
+        # Step 2: Eliminate productions with variables that cannot derive a string of terminals
+        for variable in self.variables:
+            for production in self.productions[variable]:
+                for character in production:
+                    if character in removedVariables:
+                        self.productions[variable].remove(production)
+                        break
 
     def _separateTerminalsFromVariables(self):
         pass
