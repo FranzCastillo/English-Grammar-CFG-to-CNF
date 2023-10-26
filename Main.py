@@ -22,7 +22,7 @@ def main():
     cfg = Grammar(terminals, variables, start, productions)
     print(cfg)
     cnf = CNF.CNF(cfg).parseCFG()
-    # print(cnf)
+    print(cnf)
 
 
 if __name__ == "__main__":

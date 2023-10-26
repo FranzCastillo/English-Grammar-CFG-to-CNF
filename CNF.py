@@ -76,7 +76,6 @@ class CNF:
         Eliminates unit productions
         :return: None
         """
-        print(self.productions)
         productionsWithUnits = self._getUnitProductions()
         for variable in productionsWithUnits:
             self.productions[variable].remove(productionsWithUnits[variable])
@@ -86,8 +85,6 @@ class CNF:
                 for production in self.productions[productionsWithUnits[variable]]:
                     tempProductions.append(production)
             self.productions[variable] = tempProductions
-        print(self.productions)
-
 
     def _eliminateUselessProductions(self):
         """
@@ -183,8 +180,7 @@ class CNF:
         # Step 5: Eliminate unit productions
         self._eliminateUnitProductions()
         # Step 6: Eliminate useless productions
-        # self._eliminateUselessProductions()
-        # Step 7: Eliminate useless symbols
+        self._eliminateUselessProductions()
 
 
         return Grammar(self.terminals, self.variables, self.start, self.productions)

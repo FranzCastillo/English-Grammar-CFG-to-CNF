@@ -1,7 +1,6 @@
 class VariableController:
     def __init__(self, variables):
         self.availableVariables = [chr(i) for i in range(65, 91)]  # A-Z
-        # self.availableVariables = ['X', 'Y', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W']
         self.variables = variables
         self._removeVariablesFromAvailableVariables()
 
