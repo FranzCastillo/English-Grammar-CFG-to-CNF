@@ -12,11 +12,17 @@ def main():
         'A': ['aAS', 'a', ''],
         'B': ['SbS', 'A', 'bb'],
     }
+    # terminals = ['a', 'b', 'e']
+    # variables = ['S']
+    # start = 'S'
+    # productions = {
+    #     'S': ['aSa', 'bSb', 'a', 'b', 'e',]
+    # }
 
     cfg = Grammar(terminals, variables, start, productions)
     print(cfg)
     cnf = CNF.CNF(cfg).parseCFG()
-    print(cnf)
+    # print(cnf)
 
 
 if __name__ == "__main__":

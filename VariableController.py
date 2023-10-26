@@ -1,6 +1,7 @@
 class VariableController:
     def __init__(self, variables):
         self.availableVariables = [chr(i) for i in range(65, 91)]  # A-Z
+        # self.availableVariables = ['X', 'Y', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W']
         self.variables = variables
         self._removeVariablesFromAvailableVariables()
 
@@ -10,7 +11,8 @@ class VariableController:
         :return: None
         """
         for variable in self.variables:
-            self.availableVariables.remove(variable)
+            if variable in self.availableVariables:
+                self.availableVariables.remove(variable)
 
     def getVariable(self):
         """

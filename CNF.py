@@ -47,38 +47,47 @@ class CNF:
         :return: None
         """
         variablesWithEpsilon = self._getVariablesWithEpsilonProductions()
-        while len(variablesWithEpsilon) > 0:
-            for variableWithEpsilon in variablesWithEpsilon:
-                for variable in self.productions:
-                    for production in self.productions[variable]:
-                        if variableWithEpsilon in production:
-                            self.productions[variable].append(production.replace(variableWithEpsilon, ''))
-                self.productions[variableWithEpsilon].remove('')
+
+        # Append the epsilon production to the variables that have the variable with epsilon production
+        while len(variablesWithEpsilon) != 0:
+            # Eliminate the epsilon production
+            for variable in variablesWithEpsilon:
+                self.productions[variable].remove('')
+            for variable in self.productions:
+                tempProductions = []
+                for production in self.productions[variable]:
+                    for epsilonVariable in variablesWithEpsilon:
+                        tempProductions.append(production)
+                        if epsilonVariable in production:
+                            tempProductions.append(production.replace(epsilonVariable, ''))
+                self.productions[variable] = tempProductions
             variablesWithEpsilon = self._getVariablesWithEpsilonProductions()
 
     def _getUnitProductions(self):
-        """
-        Gets the unit productions
-        :return: List of unit productions (tuple of variable and production)
-        """
-        return [(variable, production) for variable in self.productions for production in self.productions[variable]
-                if len(production) == 1 and production in self.variables]
+        productionsWithUnits = {}  # Variable: UnitVariable
+        for variable in self.productions:
+            for production in self.productions[variable]:
+                if len(production) == 1 and production in self.variables:
+                    productionsWithUnits[variable] = production
+        return productionsWithUnits
 
     def _eliminateUnitProductions(self):
         """
         Eliminates unit productions
         :return: None
         """
-        unitProductions = self._getUnitProductions()
-        while len(unitProductions) > 0:
-            for unitProduction in unitProductions:
-                if unitProduction[0] == unitProduction[1]:
-                    self.productions[unitProduction[0]].remove(unitProduction[1])
-                else:
-                    for production in self.productions[unitProduction[1]]:
-                        self.productions[unitProduction[0]].append(production)
-                    self.productions[unitProduction[0]].remove(unitProduction[1])
-            unitProductions = self._getUnitProductions()
+        print(self.productions)
+        productionsWithUnits = self._getUnitProductions()
+        for variable in productionsWithUnits:
+            self.productions[variable].remove(productionsWithUnits[variable])
+        for variable in self.productions:
+            tempProductions = self.productions[variable]
+            if variable in productionsWithUnits:
+                for production in self.productions[productionsWithUnits[variable]]:
+                    tempProductions.append(production)
+            self.productions[variable] = tempProductions
+        print(self.productions)
+
 
     def _eliminateUselessProductions(self):
         """
@@ -137,7 +146,25 @@ class CNF:
             self._addProduction(separatedTerminals[terminal], terminal)
 
     def _eliminateProductionsWithMoreThan2Variables(self):
-        pass
+        """
+        Eliminates productions with more than 2 variables in the RHS
+        :return: None
+        """
+        newProductions = {}
+        for variable in self.productions:
+            tempProductions = []
+            for production in self.productions[variable]:
+                if len(production) > 2:
+                    newVariable = self.vc.getVariable()
+                    newProduction = newVariable + production[-1]
+                    tempProductions.append(newProduction)
+                    newProductions[newVariable] = production[:-1]
+                else:
+                    tempProductions.append(production)
+            self.productions[variable] = tempProductions
+
+        for newVariable in newProductions:
+            self._addProduction(newVariable, newProductions[newVariable])
 
     def parseCFG(self):
         """
@@ -147,15 +174,17 @@ class CNF:
         """
         # Step 1: Eliminate the start symbol from the RHS of the productions
         self._eliminateStartSymbolFromRHS()
-        # Step 2: Eliminate epsilon productions
-        self._eliminateEpsilonProductions()
-        # Step 3: Eliminate unit productions
-        self._eliminateUnitProductions()
-        # Step 4: Eliminate useless productions
-        self._eliminateUselessProductions()
-        # Step 5: Separate terminals from variables in the RHS of the productions
+        # Step 2: Remove terminals with variables
         self._separateTerminalsFromVariables()
-        # Step 6: Eliminate productions with more than 2 variables in the RHS
+        # Step 3: Get all productions to 2 variables
         self._eliminateProductionsWithMoreThan2Variables()
+        # Step 4: Eliminate epsilon productions
+        self._eliminateEpsilonProductions()
+        # Step 5: Eliminate unit productions
+        self._eliminateUnitProductions()
+        # Step 6: Eliminate useless productions
+        # self._eliminateUselessProductions()
+        # Step 7: Eliminate useless symbols
+
 
         return Grammar(self.terminals, self.variables, self.start, self.productions)
