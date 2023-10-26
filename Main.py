@@ -4,20 +4,25 @@ import CNF
 
 def main():
     # https://www.geeksforgeeks.org/converting-context-free-grammar-chomsky-normal-form/
-    terminals = ['a', 'b']
-    variables = ['S', 'A', 'B']
-    start = 'S'
-    productions = {
-        'S': ['ASB'],
-        'A': ['aAS', 'a', ''],
-        'B': ['SbS', 'A', 'bb'],
-    }
-    # terminals = ['a', 'b', 'e']
-    # variables = ['S']
+    # terminals = ['a', 'b']
+    # variables = ['S', 'A', 'B', 'C', 'D', 'E']
     # start = 'S'
     # productions = {
-    #     'S': ['aSa', 'bSb', 'a', 'b', 'e',]
+    #     'S': {'ACD'},
+    #     'A': {'a'},
+    #     'B': {''},
+    #     'C': {'ED', ''},
+    #     'D': {'BC', ''},
+    #     'E': {'b'},
     # }
+    terminals = ['a', 'b',]
+    variables = ['S', 'A', 'B',]
+    start = 'S'
+    productions = {
+        'S': {'ASB'},
+        'A': {'aAS', 'a', ''},
+        'B': {'SbS', 'A', 'bb'},
+    }
 
     cfg = Grammar(terminals, variables, start, productions)
     print(cfg)
