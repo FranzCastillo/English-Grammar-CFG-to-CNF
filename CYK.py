@@ -7,12 +7,21 @@ class CYK:
         self.sentence = sentence
         self.cnf = cnf
         self.start = self.cnf.start
+        self.terminals = self.cnf.terminals
         self.variables = self.cnf.variables
         self.rules = self.cnf.productions
         self.table = []
         
+    def dissectSentence(self):
+        if ' ' in self.sentence:
+            return self.sentence.split()
+        else:
+            return list(self.sentence)
+
+        
     def parseCYK(self):
-        n = len(self.sentence)
+        w = self.dissectSentence()
+        n = len(w)
         m = len(self.variables)
         
         # Step 1: Initialize the table
