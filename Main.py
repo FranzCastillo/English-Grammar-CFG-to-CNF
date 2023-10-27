@@ -1,4 +1,5 @@
 import CNF
+import CYK
 from Grammar import Grammar
 
 
@@ -30,6 +31,18 @@ def geeksforgeeks():
     return Grammar(terminals, variables, start, productions)
 
 
+def pruebaCYK():
+    terminals = ['a', 'b']
+    variables = ['S', 'A', 'B', 'C']
+    start = 'S'
+    productions = {
+        'S': {'AB', 'BC'},
+        'A': {'BA', 'a'},
+        'B': {'CC', 'b'},
+        'C': {'AB', 'a'}
+    }
+    return Grammar(terminals, variables, start, productions)
+     
 # def proyect():
 #     # BNF would work better T.T
 #     productions = {
@@ -47,7 +60,14 @@ def main():
     print(cfg)
     cnf = CNF.CNF(cfg).parseCFG()
     print(cnf)
-
-
+    
+    sentence = "baaba"
+    
+    cykp = pruebaCYK()
+    cyk = CYK.CYK(sentence, cykp)
+    acceptance = cyk.parseCYK()
+    print('Sentence -' + sentence + '- acceptance: ' + str(acceptance)) 
+    cyk.printTable()
+    
 if __name__ == "__main__":
     main()
