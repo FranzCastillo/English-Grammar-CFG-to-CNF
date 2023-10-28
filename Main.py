@@ -1,4 +1,5 @@
 import CNF
+import CYK
 from Grammar import Grammar
 
 
@@ -53,7 +54,14 @@ def main():
     # print(cfg)
     cnf = CNF.CNF(cfg).parseCFG()
     print(cnf)
-
-
+    
+    sentence = "baaba"
+    
+    cykp = pruebaCYK()
+    cyk = CYK.CYK(sentence, cykp)
+    acceptance = cyk.parseCYK()
+    print('Sentence -' + sentence + '- acceptance: ' + str(acceptance)) 
+    cyk.printTable()
+    
 if __name__ == "__main__":
     main()
