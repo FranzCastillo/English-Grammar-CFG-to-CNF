@@ -1,6 +1,7 @@
 import CNF
 import CYK
 from Grammar import Grammar
+from GrammarAnalyzer import GrammarAnalyzer as GA
 
 
 def pfafner():
@@ -53,6 +54,13 @@ def main():
     cfg = proyect()
     cnf = CNF.CNF(cfg).parseCFG()
     print(cnf)
+    sentence = 'she eats a cake with a fork'
+    analyzer = GA(sentence)
+    for token in analyzer.tokens:
+        isInGrammarTerminals = token in cnf.terminals
+        string = '{}: {}'.format(token, isInGrammarTerminals)
+        print(string)
+
     
 if __name__ == "__main__":
     main()
