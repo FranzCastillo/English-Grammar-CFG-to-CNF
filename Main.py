@@ -34,13 +34,13 @@ def geeksforgeeks():
 def proyect():
     terminals = {'cooks', 'drinks', 'eats', 'cuts', 'she', 'he', 'with', 'in', 'cat', 'dog', 'beer', 'cake', 'juice',
                  'meat', 'soup', 'fork', 'knife', 'oven', 'a', 'the'}
-    variables = {'S', 'VP', 'PP', 'NP', 'V', 'P', 'N', 'DET', ' '}
+    variables = {'S', 'VP', 'PP', 'NP', 'V', 'P', 'N', 'DET', '_'}
     start = 'S'
     productions = {
-        'S': {('NP', ' ', 'VP')},
-        'VP': {('V', ' ', 'NP'), ('cooks',), ('drinks',), ('eats',), ('cuts',)},
-        'PP': {('P', ' ', 'NP')},
-        'NP': {('DET', ' ', 'N'), ('she',), ('he',)},
+        'S': {('NP', '_', 'VP')},
+        'VP': {('V', '_', 'NP'), ('cooks',), ('drinks',), ('eats',), ('cuts',)},
+        'PP': {('P', '_', 'NP')},
+        'NP': {('DET', '_', 'N'), ('she',), ('he',)},
         'V': {('cooks',), ('drinks',), ('eats',), ('cuts',)},
         'P': {('with',), ('in',)},
         'N': {('cat',), ('dog',), ('beer',), ('cake',), ('juice',), ('meat',), ('soup',), ('fork',), ('knife',)},

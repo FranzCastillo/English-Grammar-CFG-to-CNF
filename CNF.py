@@ -261,6 +261,9 @@ class CNF:
         self._replaceTerminalsWithVariables(replaceDictionary)
         # Step 7: Eliminate productions with more than 2 variables in the RHS
         self._eliminateProductionsWithMoreThan2Variables()
+
+        # Step 8: Eliminate useless productions (extra)
+        self._eliminateUselessProductions()
         return Grammar(
             self.terminals,
             self.variables,
