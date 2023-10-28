@@ -50,18 +50,9 @@ def proyect():
 
 
 def main():
-    cfg = geeksforgeeks()
-    # print(cfg)
+    cfg = proyect()
     cnf = CNF.CNF(cfg).parseCFG()
     print(cnf)
-    
-    sentence = "baaba"
-    
-    cykp = pruebaCYK()
-    cyk = CYK.CYK(sentence, cykp)
-    acceptance = cyk.parseCYK()
-    print('Sentence -' + sentence + '- acceptance: ' + str(acceptance)) 
-    cyk.printTable()
     
 if __name__ == "__main__":
     main()

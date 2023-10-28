@@ -2,7 +2,8 @@ from Token import Token
 
 class VariableController:
     def __init__(self, variables):
-        self.availableVariables = [chr(i) for i in range(65, 91)]  # A-Z
+        # A list with numbers and letters from A to Z
+        self.availableVariables = [chr(i) for i in range(65, 91)] + [str(i) for i in range(0, 10)]
         self.variables = variables
         self._removeVariablesFromAvailableVariables()
 
