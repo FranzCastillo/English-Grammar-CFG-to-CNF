@@ -1,4 +1,5 @@
 from Grammar import Grammar
+from Token import Token
 from VariableController import VariableController
 
 
@@ -6,7 +7,9 @@ class CNF:
     def __init__(self, cfg):
         self.cfg = cfg
         self.terminals = cfg.terminals
+        self.terminalsDictionary = cfg.terminalsDictionary
         self.variables = cfg.variables
+        self.variablesDictionary = cfg.variablesDictionary
         self.start = cfg.start
         self.productions = cfg.productions
         del self.cfg
@@ -30,8 +33,9 @@ class CNF:
         Eliminates the start symbol from the RHS of the productions
         :return: None
         """
-        newStart = self.start + "'"  # S0
-        self._addProduction(newStart, self.start)
+        newStart = Token(self.start.name + "'")
+        newTuple = (self.start, )
+        self._addProduction(newStart, newTuple)
         self.start = newStart
 
     def _getVariablesWithEpsilonProductions(self):
@@ -40,10 +44,12 @@ class CNF:
         :return:
         """
         variablesWithEpsilon = set()
-        for variable in self.productions:
-            for production in self.productions[variable]:
-                if production == '':
-                    variablesWithEpsilon.add(variable)
+        for key in list(self.productions):
+            for production in self.productions[key].copy():
+                for token in production:
+                    if token.isEpsilon:
+                        variablesWithEpsilon.add(key)
+                        break
         return variablesWithEpsilon
 
     def _eliminateEpsilonProductions(self):
@@ -52,26 +58,42 @@ class CNF:
         :return: None
         """
         variablesWithEpsilon = self._getVariablesWithEpsilonProductions()
+        # Step 1: Remove the productions with epsilon
         while len(variablesWithEpsilon) != 0:
             for variable in variablesWithEpsilon:
-                self.productions[variable].remove('')
+                for production in self.productions[variable].copy():
+                    for token in production:
+                        if token.isEpsilon:
+                            self.productions[variable].remove(production)
+                            break
 
-            for variable in self.productions:
+        # Step 2: Append the productions of the removed production
+            for variable in list(self.productions):
                 productionsToAppend = set()
-                for production in self.productions[variable]:
-                    # Deletes individual epsilon productions
-                    for character in production:
-                        if character in variablesWithEpsilon:
-                            productionsToAppend.add(production.replace(character, ''))
-                    # Delete also if it has multiple epsilon productions
-                    tempProduction = ''
-                    for character in production:
-                        if character not in variablesWithEpsilon:
-                            tempProduction += character
-                    if tempProduction != '':
-                        productionsToAppend.add(tempProduction)
+                for production in self.productions[variable].copy():
+                    productionsToAppend.add(production)
+                    listToConvertToTuple = list()
+                    # Remove single variables
+                    for variableWithEpsilon in variablesWithEpsilon:
+                        for token in production:
+                            if token != variableWithEpsilon:
+                                listToConvertToTuple.append(token)
+                        if len(listToConvertToTuple) == 0:
+                            listToConvertToTuple.append(Token('ε', isEpsilon=True))
+                        newTuple = tuple(listToConvertToTuple)
+                        productionsToAppend.add(newTuple)
+                        listToConvertToTuple = list()
+                    # Remove multiple variables
+                    for token in production:
+                        if token not in variablesWithEpsilon:
+                            listToConvertToTuple.append(token)
+                    if len(listToConvertToTuple) == 0:
+                        listToConvertToTuple.append(Token('ε', isEpsilon=True))
+                    else:
+                        newTuple = tuple(listToConvertToTuple)
+                        productionsToAppend.add(newTuple)
 
-                self.productions[variable].update(productionsToAppend)
+                    self.productions[variable].update(productionsToAppend)
             variablesWithEpsilon = self._getVariablesWithEpsilonProductions()
 
     def _getUnitProductions(self):
@@ -79,8 +101,10 @@ class CNF:
         for variable in self.productions:
             productionsWithUnits[variable] = set()
             for production in self.productions[variable]:
-                if len(production) == 1 and production in self.variables:
-                    productionsWithUnits[variable].add(production)
+                if len(production) == 1:
+                    if production[0] in self.variables:
+                        newTuple = (production[0], )
+                        productionsWithUnits[variable].add(newTuple)
 
         # Deletes empty sets
         for variable in list(productionsWithUnits.keys()):
@@ -103,7 +127,7 @@ class CNF:
         # Step 2: Append the productions of the removed production
         for variable in list(productionsWithUnits.keys()):
             for unitVariable in productionsWithUnits[variable]:
-                self.productions[variable].update(self.productions[unitVariable])
+                self.productions[variable].update(self.productions[unitVariable[0]])
 
     def _getReachable(self):
         """
@@ -111,19 +135,20 @@ class CNF:
         :return: set(ReachableVariables)
         """
         reachableVariables = {self.start}
-        for variable in self.productions.keys():
-            for production in self.productions[variable]:
-                for character in production:
-                    if character in self.variables:
-                        reachableVariables.add(character)
-
         reachableTerminals = set()
-        for variable in self.productions.keys():
-            for production in self.productions[variable]:
-                for character in production:
-                    if character in self.terminals:
-                        reachableTerminals.add(character)
-
+        areDifferent = True
+        while areDifferent:
+            areDifferent = False
+            for variable in self.productions:
+                if variable in list(reachableVariables):
+                    for production in self.productions[variable].copy():
+                        for token in production:
+                            if token in self.variables and token not in reachableVariables:
+                                reachableVariables.add(token)
+                                areDifferent = True
+                            elif token in self.terminals and token not in reachableTerminals:
+                                reachableTerminals.add(token)
+                                areDifferent = True
         return reachableVariables, reachableTerminals
 
     def _eliminateUselessProductions(self):
@@ -138,13 +163,12 @@ class CNF:
                 del self.productions[variable]
 
         # Step 2: Eliminate productions with terminals that are not reachable from the start symbol
-        for variable in self.productions.keys():
-            for production in self.productions[variable].copy():
-                for character in production:
-                    if character in self.terminals and character not in reachableTerminals:
-                        self.productions[variable].remove(production)
-                    if character in self.variables and character not in reachableVariables:
-                        self.productions[variable].remove(production)
+        for key in list(self.productions):
+            for production in self.productions[key].copy():
+                for token in production:
+                    if token in self.terminals and token not in reachableTerminals:
+                        self.productions[key].remove(production)
+                        break
 
         # Step 3: Eliminate productions with empty sets
         removedVariables = set()
@@ -155,9 +179,10 @@ class CNF:
 
         for variable in list(self.productions.keys()):
             for production in self.productions[variable].copy():
-                for character in production:
-                    if character in removedVariables:
+                for token in production:
+                    if token in removedVariables:
                         self.productions[variable].remove(production)
+                        break
 
     def _separateTerminalsFromVariables(self):
         """
@@ -168,7 +193,7 @@ class CNF:
         for terminal in self.terminals:
             newVariable = self.vc.getVariable()
             separatedTerminals[terminal] = newVariable
-            self._addProduction(newVariable, terminal)
+            self._addProduction(newVariable, (terminal, ))
         return separatedTerminals
 
     def _replaceTerminalsWithVariables(self, replaceDictionary):
@@ -181,16 +206,17 @@ class CNF:
             if variable in dontReplace:
                 continue
             for production in self.productions[variable].copy():
-                if len(production) == 1 and production in self.terminals:
+                if len(production) == 1 and production[0] in self.terminals:
                     continue
-                newProduction = ''
-                for character in production:
-                    if character in replaceDictionary:
-                        newProduction += replaceDictionary[character]
+                listToConvertToTuple = []
+                for token in production:
+                    if token in replaceDictionary:
+                        listToConvertToTuple.append(replaceDictionary[token])
                     else:
-                        newProduction += character
+                        listToConvertToTuple.append(token)
+                newTuple = tuple(listToConvertToTuple)
                 self.productions[variable].remove(production)
-                self.productions[variable].add(newProduction)
+                self.productions[variable].add(newTuple)
 
     def _areProductionsWithMoreThan2Variables(self):
         for variable in self.productions:
@@ -208,10 +234,12 @@ class CNF:
             for variable in list(self.productions.keys()):
                 for production in self.productions[variable].copy():
                     if len(production) > 2:
-                        newVariable = self.vc.getVariable()
                         self.productions[variable].remove(production)
-                        self.productions[variable].add(newVariable + production[-1])
-                        self._addProduction(newVariable, production[:-1])
+
+                        newVar = self.vc.getVariable()
+                        newTuple = (newVar, production[-1])
+                        self._addProduction(newVar, production[:-1])
+                        self._addProduction(variable, newTuple)
 
     def parseCFG(self):
         """
@@ -233,5 +261,12 @@ class CNF:
         self._replaceTerminalsWithVariables(replaceDictionary)
         # Step 7: Eliminate productions with more than 2 variables in the RHS
         self._eliminateProductionsWithMoreThan2Variables()
+        return Grammar(
+            self.terminals,
+            self.variables,
+            self.start,
+            self.productions,
+            terminalsDictionary=self.terminalsDictionary,
+            variablesDictionary=self.variablesDictionary
+        )
 
-        return Grammar(self.terminals, self.variables, self.start, self.productions)

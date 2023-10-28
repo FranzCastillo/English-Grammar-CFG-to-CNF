@@ -1,3 +1,5 @@
+from Token import Token
+
 class VariableController:
     def __init__(self, variables):
         self.availableVariables = [chr(i) for i in range(65, 91)]  # A-Z
@@ -20,4 +22,4 @@ class VariableController:
         """
         variable = self.availableVariables[0]
         self.availableVariables.remove(variable)
-        return variable
+        return Token(variable)
