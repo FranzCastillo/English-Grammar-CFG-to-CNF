@@ -39,7 +39,7 @@ def proyect():
     start = 'S'
     productions = {
         'S': {('NP', '_', 'VP')},
-        'VP': {('V', '_', 'NP'), ('cooks',), ('drinks',), ('eats',), ('cuts',)},
+        'VP': {('VP', '_', 'PP'), ('V', '_', 'NP'), ('cooks',), ('drinks',), ('eats',), ('cuts',)},
         'PP': {('P', '_', 'NP')},
         'NP': {('DET', '_', 'N'), ('she',), ('he',)},
         'V': {('cooks',), ('drinks',), ('eats',), ('cuts',)},
