@@ -8,6 +8,9 @@ class GrammarAnalyzer:
     def _tokenizeSentence(self):
         words = self.sentence.split()
         tokens = []
+        spaceToken = Token('_', True)
         for word in words:
             tokens.append(Token(word, True))
+            tokens.append(spaceToken)
+        tokens.pop()
         return tokens

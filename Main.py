@@ -34,8 +34,8 @@ def geeksforgeeks():
 
 def proyect():
     terminals = {'cooks', 'drinks', 'eats', 'cuts', 'she', 'he', 'with', 'in', 'cat', 'dog', 'beer', 'cake', 'juice',
-                 'meat', 'soup', 'fork', 'knife', 'oven', 'a', 'the'}
-    variables = {'S', 'VP', 'PP', 'NP', 'V', 'P', 'N', 'DET', '_'}
+                 'meat', 'soup', 'fork', 'knife', 'oven', 'a', 'the', '_'}
+    variables = {'S', 'VP', 'PP', 'NP', 'V', 'P', 'N', 'DET'}
     start = 'S'
     productions = {
         'S': {('NP', '_', 'VP')},
