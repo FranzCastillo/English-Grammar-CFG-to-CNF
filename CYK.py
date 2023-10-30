@@ -1,4 +1,6 @@
 from graphviz import Digraph
+import os
+os.environ["PATH"] += os.pathsep + 'D:/Programs/Graphviz/bin'
 
 """
 CYK algorithm for context-free grammars given in Chomsky normal form (CNF). Also the genration of the parse tree.
