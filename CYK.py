@@ -45,10 +45,8 @@ def CYK(sentence, rules, start):
                             if v1 in table[p][s] and v2 in table[l-p-2][s+p+1]:
                                 table[l-1][s].add(rule.name)
                                 parseTree[l-1][s] = Node(rule.name, parseTree[p][s], parseTree[l-p-2][s+p+1])
-    
-    print(parseTree)
 
-    return parseTree[-1][0] if start in table[-1][0] else None
+    return parseTree[-1][0] if start in table[-1][0] else None, start in table[-1][0]
 
 def graphTree(tree, filename):
     dot = Digraph(comment='Parse Tree', format='png')
