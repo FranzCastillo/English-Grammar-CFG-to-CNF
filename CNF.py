@@ -241,6 +241,16 @@ class CNF:
                         self._addProduction(newVar, production[:-1])
                         self._addProduction(variable, newTuple)
 
+
+    def _checkVariablesInProductions(self):
+        # List with rules name from self.productions
+        rules = list(self.productions.keys())
+        # Delete from self.variables all the variables that are not in rules
+        for variable in self.variables.copy():
+            if variable not in rules:
+                self.variables.remove(variable)
+                
+    
     def parseCFG(self):
         """
         Parses the CFG into CNF
@@ -264,6 +274,10 @@ class CNF:
 
         # Step 8: Eliminate useless productions (extra)
         self._eliminateUselessProductions()
+        
+        # Step 9: Eliminate useless variables (extra)
+        self._checkVariablesInProductions()
+        
         return Grammar(
             self.terminals,
             self.variables,
