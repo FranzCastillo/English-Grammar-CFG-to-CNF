@@ -2,6 +2,7 @@ import CNF
 import CYK
 from Grammar import Grammar
 from GrammarAnalyzer import GrammarAnalyzer as GA
+import timeit
 
 
 def pfafner():
@@ -55,11 +56,18 @@ def outputSeparator():
 
 def main():
     print('Conversion to Chomsky Normal Form (CNF):\n')
+    start_time = timeit.default_timer()
+
     cfg = proyect()
     cnf = CNF.CNF(cfg).parseCFG()
     print(cnf)
     
+    end_time = timeit.default_timer()
+    print(f"- Time elapsed: {round((end_time - start_time), 7)} seconds")
+    
     outputSeparator()
+    
+    start_time = timeit.default_timer()
     
     print('Sentence analysis:\n')
     sentence = 'she eats a cake'
@@ -69,8 +77,13 @@ def main():
         isInGrammarTerminals = token in cnf.terminals
         string = '{}: {}'.format(token, isInGrammarTerminals)
         print(string)
-        
+    
+    end_time = timeit.default_timer()
+    print(f"- Time elapsed: {round((end_time - start_time), 7)} seconds")
+                
     outputSeparator()
+    
+    start_time = timeit.default_timer()
     
     print('CYK algorithm:\n')
     cyk = CYK.CYK(analyzer.tokens, cnf.productions, cnf.start)
@@ -79,6 +92,9 @@ def main():
     tree = cyk[0]
     CYK.graphTree(tree, 'parseTree')
     print('Parse tree generated in graphs/parseTree.png\n')
+    
+    end_time = timeit.default_timer()
+    print(f"- Time elapsed: {round((end_time - start_time), 7)} seconds")
     
 if __name__ == "__main__":
     main()
