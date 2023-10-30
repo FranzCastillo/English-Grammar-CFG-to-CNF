@@ -50,21 +50,35 @@ def proyect():
     return Grammar(terminals, variables, start, productions)
 
 
+def outputSeparator():
+    print('\n----------------------------------------------------------------\n')
+
 def main():
+    print('Conversion to Chomsky Normal Form (CNF):\n')
     cfg = proyect()
     cnf = CNF.CNF(cfg).parseCFG()
     print(cnf)
+    
+    outputSeparator()
+    
+    print('Sentence analysis:\n')
     sentence = 'she eats a cake'
+    print('Sentence: {}\n'.format(sentence))
     analyzer = GA(sentence)
     for token in analyzer.tokens:
         isInGrammarTerminals = token in cnf.terminals
         string = '{}: {}'.format(token, isInGrammarTerminals)
+        print(string)
+        
+    outputSeparator()
     
+    print('CYK algorithm:\n')
     cyk = CYK.CYK(analyzer.tokens, cnf.productions, cnf.start)
     acceptance = cyk[1]
-    print(acceptance)
+    print('The sentence is accepted by the grammar: {}\n'.format(acceptance))
     tree = cyk[0]
     CYK.graphTree(tree, 'parseTree')
+    print('Parse tree generated in graphs/parseTree.png\n')
     
 if __name__ == "__main__":
     main()

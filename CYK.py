@@ -67,4 +67,4 @@ def graphTree(tree, filename):
                 
     addNode(tree)
     
-    dot.render('graphs/{}'.format(filename), view=True)
+    dot.render('graphs/{}'.format(filename), view=False, cleanup=True)
