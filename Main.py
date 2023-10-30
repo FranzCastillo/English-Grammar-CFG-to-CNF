@@ -79,7 +79,7 @@ def main():
         print(string)
     
     end_time = timeit.default_timer()
-    print(f"- Time elapsed: {round((end_time - start_time), 7)} seconds")
+    print(f"\n- Time elapsed: {round((end_time - start_time), 7)} seconds")
                 
     outputSeparator()
     
@@ -89,9 +89,12 @@ def main():
     cyk = CYK.CYK(analyzer.tokens, cnf.productions, cnf.start)
     acceptance = cyk[1]
     print('The sentence is accepted by the grammar: {}\n'.format(acceptance))
-    tree = cyk[0]
-    CYK.graphTree(tree, 'parseTree')
-    print('Parse tree generated in graphs/parseTree.png\n')
+    if acceptance:
+        tree = cyk[0]
+        CYK.graphTree(tree, 'parseTree')
+        print('Parse tree generated in graphs/parseTree.png\n')
+    else:
+        print('No parse tree generated.\n')
     
     end_time = timeit.default_timer()
     print(f"- Time elapsed: {round((end_time - start_time), 7)} seconds")
