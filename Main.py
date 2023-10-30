@@ -54,13 +54,14 @@ def main():
     cfg = proyect()
     cnf = CNF.CNF(cfg).parseCFG()
     print(cnf)
-    sentence = 'she eats a cake with a fork'
+    sentence = 'she eats a cake'
     analyzer = GA(sentence)
     for token in analyzer.tokens:
         isInGrammarTerminals = token in cnf.terminals
         string = '{}: {}'.format(token, isInGrammarTerminals)
-        print(string)
-
+    
+    acceptance = CYK.CYK(analyzer.tokens, cnf.productions, cnf.start) 
+    print(acceptance)
     
 if __name__ == "__main__":
     main()

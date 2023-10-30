@@ -1,55 +1,48 @@
 """
-Class CYK. This class implements the CYK algorithm for context-free grammars given in Chomsky normal form (CNF).
+CYK algorithm for context-free grammars given in Chomsky normal form (CNF). Also the genration of the parse tree.
 """
 
-class CYK:
-    def __init__(self, sentence, cnf):
-        self.sentence = sentence
-        self.cnf = cnf
-        self.start = self.cnf.start
-        self.terminals = self.cnf.terminals
-        self.variables = self.cnf.variables
-        self.rules = self.cnf.productions
-        self.table = []
-        
-    def dissectSentence(self):
-        if ' ' in self.sentence:
-            return self.sentence.split()
-        else:
-            return list(self.sentence)
+# Class to represent a node in the parse tree
+class Node:
+    def __init__(self, value, left=None, right=None):
+        self.value = value
+        self.leftChild = left
+        self.rightChild = right
 
-        
-    def parseCYK(self):
-        w = self.dissectSentence()
-        n = len(w)
-        m = len(self.variables)
-        
-        # Step 1: Initialize the table
-        P = [[set() for j in range(n-i)] for i in range(n)]
-        
-        # Step 2: Fill base of the table
-        for i, letter in enumerate(self.sentence):
-            for variable, production in self.rules.items():
-                if letter in production:
-                    P[0][i].add(variable)
-        
-        # Step 3: Fill the rest of the table
-        for i in range(1, n):
-            for j in range(n-i):
-                for k in range(i):
-                    for variable, production in self.rules.items():
-                        for prod in production:
-                            if len(prod) == 2:
-                                B, C = prod
-                                if B in P[k][j] and C in P[i-k-1][j+k+1]:
-                                    P[i][j].add(variable)
-        
-        self.table = P
-        
-        # Step 4: Check if start symbol is in the top right cell of the table
-        return self.start in P[-1][0]
+    def __str__(self):
+        return self.value
+
+
+# CYK Algorithm
+def CYK(sentence, rules, start):
+    # Example of sentence: [she, eats, a, cake, with, a, fork]
+    # Example of rules: {VP: {(drinks,), (cuts,), (eats,), (Y, NP), (cooks,)}, NP: {(Z, N), (he,), (she,)}, V: {(drinks,), (cuts,), (eats,), (cooks,)}, N: {(meat,), (fork,), (cat,), (knife,), (soup,), (cake,), (beer,), (juice,), (dog,)}, DET: {(the,), (a,)}, S': {(0, VP)}, Y: {(V, _)}, Z: {(DET, _)}, 0: {(NP, _)}}
+    # Example of start: S'
     
-    def printTable(self):
-        for row in self.table:
-            print(' '.join([str(cell) for cell in row]))
-        
+    # Create table and Parse Tree table
+    n = len(sentence)
+    table = [[set() for i in range(n - j)] for j in range(n)]
+    parseTree = [[None for i in range(n - j)] for j in range(n)]
+    
+    # Fill the diagonal of the table
+    for i in range(n):
+        for rule in rules:
+            for val in rules[rule]:
+                if sentence[i] in val:
+                    table[0][i].add(rule)
+                    parseTree[0][i] = Node(rule, Node(sentence[i]))
+                    print(sentence[i], rule)
+      
+    
+    for l in range(2, n+1):
+        for s in range(n-l+1):
+            for p in range(l-1):
+                for rule in rules:
+                    for val in rules[rule]:
+                        if len(val) != 1:
+                            v1, v2 = val
+                            if v1 in table[p][s] and v2 in table[l-p-2][s+p+1]:
+                                table[l-1][s].add(rule)
+                                parseTree[l-1][s] = Node(rule, parseTree[p][s], parseTree[l-p-2][s+p+1])
+
+    return start in table[-1][0]
