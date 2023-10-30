@@ -23,6 +23,6 @@ class Grammar(object):
         string += 'Start: {}\n'.format(self.start)
         string += 'Productions:\n'
         for key in self.productions:
-            string += '\t{}\t→\t{}\n'.format(key, self.productions[key])
+            string += '\t{}\t->\t{}\n'.format(key, self.productions[key])
 
         return string
