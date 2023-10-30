@@ -1,3 +1,5 @@
+from graphviz import Digraph
+
 """
 CYK algorithm for context-free grammars given in Chomsky normal form (CNF). Also the genration of the parse tree.
 """
@@ -30,8 +32,7 @@ def CYK(sentence, rules, start):
             for val in rules[rule]:
                 if sentence[i] in val:
                     table[0][i].add(rule)
-                    parseTree[0][i] = Node(rule, Node(sentence[i]))
-                    print(sentence[i], rule)
+                    parseTree[0][i] = Node(rule.name, Node(sentence[i].name))
       
     
     for l in range(2, n+1):
@@ -42,7 +43,30 @@ def CYK(sentence, rules, start):
                         if len(val) != 1:
                             v1, v2 = val
                             if v1 in table[p][s] and v2 in table[l-p-2][s+p+1]:
-                                table[l-1][s].add(rule)
-                                parseTree[l-1][s] = Node(rule, parseTree[p][s], parseTree[l-p-2][s+p+1])
+                                table[l-1][s].add(rule.name)
+                                parseTree[l-1][s] = Node(rule.name, parseTree[p][s], parseTree[l-p-2][s+p+1])
+    
+    print(parseTree)
 
-    return start in table[-1][0]
+    return parseTree[-1][0] if start in table[-1][0] else None
+
+def graphTree(tree, filename):
+    dot = Digraph(comment='Parse Tree', format='png')
+    
+    def addNode(node):
+        
+        dot.node(str(id(node)), str(node))
+        
+        if node:
+            
+            if node.leftChild:
+                dot.edge(str(id(node)), str(id(node.leftChild)))
+                addNode(node.leftChild)
+            
+            if node.rightChild:
+                dot.edge(str(id(node)), str(id(node.rightChild)))
+                addNode(node.rightChild)
+                
+    addNode(tree)
+    
+    dot.render('graphs/{}'.format(filename), view=True)

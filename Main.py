@@ -60,8 +60,8 @@ def main():
         isInGrammarTerminals = token in cnf.terminals
         string = '{}: {}'.format(token, isInGrammarTerminals)
     
-    acceptance = CYK.CYK(analyzer.tokens, cnf.productions, cnf.start) 
-    print(acceptance)
+    tree = CYK.CYK(analyzer.tokens, cnf.productions, cnf.start)
+    CYK.graphTree(tree, 'parseTree')
     
 if __name__ == "__main__":
     main()
