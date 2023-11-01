@@ -19,8 +19,22 @@ class Node:
 
 # CYK Algorithm
 def CYK(sentence, rules, start):
-    # Example of sentence: [she, eats, a, cake, with, a, fork]
-    # Example of rules: {VP: {(drinks,), (cuts,), (eats,), (Y, NP), (cooks,)}, NP: {(Z, N), (he,), (she,)}, V: {(drinks,), (cuts,), (eats,), (cooks,)}, N: {(meat,), (fork,), (cat,), (knife,), (soup,), (cake,), (beer,), (juice,), (dog,)}, DET: {(the,), (a,)}, S': {(0, VP)}, Y: {(V, _)}, Z: {(DET, _)}, 0: {(NP, _)}}
+    # Example of sentence: [a, _, cat, _, eats, _, a, _, cake, _, with, _, a, _, fork, _, in, _, the, _, oven]
+    # Example of rules:
+    # <VP>	->	{(Z, NP), (0, PP), (cooks,), (cuts,), (drinks,), (eats,)}
+    # <PP>	->	{(1, NP)}
+    # <NP>	->	{(he,), (she,), (2, N)}
+    # <V>	->	{(cooks,), (cuts,), (drinks,), (eats,)}
+    # <P>	->	{(with,), (in,)}
+    # <N>	->	{(meat,), (knife,), (beer,), (juice,), (dog,), (fork,), (soup,), (cake,), (cat,)}
+    # <DET>	->	{(a,), (the,)}
+    # <S'>	->	{(3, VP)}
+    # <O>	->	{(_,)}
+    # <Z>	->	{(V, O)}
+    # <0>	->	{(VP, O)}
+    # <1>	->	{(P, O)}
+    # <2>	->	{(DET, O)}
+    # <3>	->	{(NP, O)}
     # Example of start: S'
     
     # Create table and Parse Tree table
@@ -37,18 +51,20 @@ def CYK(sentence, rules, start):
                     parseTree[0][i] = Node(rule.name, Node(sentence[i].name))
       
     
+    # Fill the rest of the table
     for l in range(2, n+1):
         for s in range(n-l+1):
-            for p in range(l-1):
+            for p in range(1, l):
                 for rule in rules:
                     for val in rules[rule]:
-                        if len(val) != 1:
+                        if len(val) == 2:
                             v1, v2 = val
-                            if v1 in table[p][s] and v2 in table[l-p-2][s+p+1]:
-                                table[l-1][s].add(rule.name)
-                                parseTree[l-1][s] = Node(rule.name, parseTree[p][s], parseTree[l-p-2][s+p+1])
+                            if v1 in table[p-1][s] and v2 in table[l-p-1][s+p]:
+                                table[l-1][s].add(rule)
+                                parseTree[l-1][s] = Node(rule.name, parseTree[p-1][s], parseTree[l-p-1][s+p])
 
     return parseTree[-1][0] if start in table[-1][0] else None, start in table[-1][0]
+
 
 def graphTree(tree, filename):
     dot = Digraph(comment='Parse Tree', format='png')
