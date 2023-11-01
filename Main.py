@@ -70,7 +70,7 @@ def main():
     start_time = timeit.default_timer()
     
     print('Sentence analysis:\n')
-    sentence = 'a cat eats a cake with a fork in the oven with a knife with a knife'
+    sentence = 'a cat eats a cake'
     print('Sentence: {}\n'.format(sentence))
     analyzer = GA(sentence)
     for token in analyzer.tokens:

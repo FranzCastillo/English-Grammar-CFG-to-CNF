@@ -63,6 +63,22 @@ def CYK(sentence, rules, start):
                                 table[l-1][s].add(rule)
                                 parseTree[l-1][s] = Node(rule.name, parseTree[p-1][s], parseTree[l-p-1][s+p])
 
+
+    # Check that each node has the right node children
+    for i in range(len(parseTree)):
+        for node in parseTree[i]:
+            if node is not None:
+                for rule in rules:
+                    if node.value == rule.name:
+                        if node.leftChild is not None and node.rightChild is not None:
+                            for val in rules[rule]:
+                                if len(val) == 2:
+                                    v1, v2 = val
+                                    if v2.name == node.rightChild.value:
+                                        if v1.name != node.leftChild.value:
+                                            node.leftChild.value, node.rightChild.value = v1.name, v2.name
+                    
+    
     return parseTree[-1][0] if start in table[-1][0] else None, start in table[-1][0]
 
 
