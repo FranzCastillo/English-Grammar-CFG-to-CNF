@@ -45,7 +45,7 @@ def proyect():
         'NP': {('DET', '_', 'N'), ('she',), ('he',)},
         'V': {('cooks',), ('drinks',), ('eats',), ('cuts',)},
         'P': {('with',), ('in',)},
-        'N': {('cat',), ('dog',), ('beer',), ('cake',), ('juice',), ('meat',), ('soup',), ('fork',), ('knife',)},
+        'N': {('cat',), ('dog',), ('beer',), ('cake',), ('juice',), ('meat',), ('soup',), ('fork',), ('knife',), ('oven',)},
         'DET': {('a',), ('the',)},
     }
     return Grammar(terminals, variables, start, productions)
@@ -70,7 +70,7 @@ def main():
     start_time = timeit.default_timer()
     
     print('Sentence analysis:\n')
-    sentence = 'she eats a cake'
+    sentence = 'a cat eats a cake with a fork in the oven with a knife with a knife'
     print('Sentence: {}\n'.format(sentence))
     analyzer = GA(sentence)
     for token in analyzer.tokens:
