@@ -35,7 +35,7 @@ def geeksforgeeks():
 
 def proyect():
     terminals = {'cooks', 'drinks', 'eats', 'cuts', 'she', 'he', 'with', 'in', 'cat', 'dog', 'beer', 'cake', 'juice',
-                 'meat', 'soup', 'fork', 'knife', 'oven', 'a', 'the', '_'}
+                 'meat', 'soup', 'fork', 'knife', 'oven', 'spoon', 'a', 'the', '_'}
     variables = {'S', 'VP', 'PP', 'NP', 'V', 'P', 'N', 'DET'}
     start = 'S'
     productions = {
@@ -45,7 +45,7 @@ def proyect():
         'NP': {('DET', '_', 'N'), ('she',), ('he',)},
         'V': {('cooks',), ('drinks',), ('eats',), ('cuts',)},
         'P': {('with',), ('in',)},
-        'N': {('cat',), ('dog',), ('beer',), ('cake',), ('juice',), ('meat',), ('soup',), ('fork',), ('knife',), ('oven',)},
+        'N': {('cat',), ('dog',), ('beer',), ('cake',), ('juice',), ('meat',), ('soup',), ('fork',), ('knife',), ('oven',), ('spoon',)},
         'DET': {('a',), ('the',)},
     }
     return Grammar(terminals, variables, start, productions)
@@ -70,34 +70,40 @@ def main():
     start_time = timeit.default_timer()
     
     print('Sentence analysis:\n')
-    sentence = 'a cat eats a cake'
-    print('Sentence: {}\n'.format(sentence))
-    analyzer = GA(sentence)
-    for token in analyzer.tokens:
-        isInGrammarTerminals = token in cnf.terminals
-        string = '{}: {}'.format(token, isInGrammarTerminals)
-        print(string)
+    sentences = ['she eats a cake with a fork', 'the cat drinks the beer', 'he cooks in a dog', 
+                 'the soup cooks with a juice', 'dog a with cuts he', 'drinks she with a']
     
-    end_time = timeit.default_timer()
-    print(f"\n- Time elapsed: {round((end_time - start_time), 7)} seconds")
-                
-    outputSeparator()
-    
-    start_time = timeit.default_timer()
-    
-    print('CYK algorithm:\n')
-    cyk = CYK.CYK(analyzer.tokens, cnf.productions, cnf.start)
-    acceptance = cyk[1]
-    print('The sentence is accepted by the grammar: {}\n'.format(acceptance))
-    if acceptance:
-        tree = cyk[0]
-        CYK.graphTree(tree, 'parseTree')
-        print('Parse tree generated in graphs/parseTree.png\n')
-    else:
-        print('No parse tree generated.\n')
-    
-    end_time = timeit.default_timer()
-    print(f"- Time elapsed: {round((end_time - start_time), 7)} seconds")
+    i = 1
+    for sentence in sentences:
+        print('Sentence: {}\n'.format(sentence))
+        analyzer = GA(sentence)
+        for token in analyzer.tokens:
+            isInGrammarTerminals = token in cnf.terminals
+            string = '{}: {}'.format(token, isInGrammarTerminals)
+            print(string)
+        
+        end_time = timeit.default_timer()
+        print(f"\n- Time elapsed: {round((end_time - start_time), 7)} seconds")
+                    
+        outputSeparator()
+        
+        start_time = timeit.default_timer()
+        
+        print('CYK algorithm:\n')
+        cyk = CYK.CYK(analyzer.tokens, cnf.productions, cnf.start)
+        acceptance = cyk[1]
+        print('The sentence is accepted by the grammar: {}\n'.format(acceptance))
+        if acceptance:
+            tree = cyk[0]
+            CYK.graphTree(tree, 'parseTree'+str(i))
+            print('Parse tree ' + str(i) + ' generated in graphs/parseTree.png\n')
+        else:
+            print('No parse tree generated.\n')
+        
+        end_time = timeit.default_timer()
+        print(f"- Time elapsed: {round((end_time - start_time), 7)} seconds")
+        
+        i +=1
     
 if __name__ == "__main__":
     main()
